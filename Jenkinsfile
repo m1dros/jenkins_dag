@@ -1,7 +1,7 @@
 pipeline {
     agent any
     parameters {
-        choice(name: 'Script', choices: ['All', 'python', 'Bash', 'C.script'], description: Coice script '')
+        choice(name: 'Script', choices: ['All', 'python', 'Bash', 'C.script'], description: 'Choice Script' )
     }
     stages {
         stage('Script python') {

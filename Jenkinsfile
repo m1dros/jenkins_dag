@@ -1,25 +1,29 @@
 pipeline {
     agent any
     parameters {
-        choice(name: 'Script', choices: ['All', 'python', 'Bash', 'C.script'], description: 'Choice Script' )
+        choice(name: 'Script', choices: ['All', 'python', 'Bash', 'C.script'], description: 'Choice Script')
     }
     stages {
         stage('Script python') {
-            steps {
             when {
                 anyOf {
                     expression { params.Script == 'All' }
                     expression { params.Script == 'python' }
-                    }
                 }
             }
+            steps {
+                sh 'cat python'
+            }
         }
-        stage('Script Bash'){
+        stage('Script Bash') {
             when {
                 anyOf {
                     expression { params.Script == 'All' }
                     expression { params.Script == 'Bash' }
                 }
+            }
+            steps {
+                sh 'cat Bash'
             }
         }
         stage('Script C') {
@@ -28,6 +32,9 @@ pipeline {
                     expression { params.Script == 'All' }
                     expression { params.Script == 'C' }
                 }
+            }
+            steps {
+                sh 'cat C'
             }
         }
     }

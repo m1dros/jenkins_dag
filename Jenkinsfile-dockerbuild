@@ -41,13 +41,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            script {
-                sh 'docker rmi ${DOCKERHUB_REPO}:${env.BUILD_NUMBER} || true'
-                sh 'docker rmi ${DOCKERHUB_REPO}:latest || true'
-            }
-        }
-    }
 }

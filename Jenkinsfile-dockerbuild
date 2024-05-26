@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_CREDENTIALS_ID = 'dockerhub-cred-spirit'
+        DOCKERHUB_REPO = 'spirit781/jenkins-images'
+        GIT_REPO = 'https://github.com/m1dros/jenkins_dag.git'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: "${GIT_REPO}", branch: 'main'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    def dockerImage = docker.build("${DOCKERHUB_REPO}:${env.BUILD_NUMBER}")
+                }
+            }
+        }
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
+                        echo 'Logged in to Docker Hub'
+                    }
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    docker.withRegistry('', "${DOCKER_CREDENTIALS_ID}") {
+                        def dockerImage = docker.build("${DOCKERHUB_REPO}:${env.BUILD_NUMBER}")
+                        dockerImage.push()
+                        dockerImage.push('latest')
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                sh 'docker rmi ${DOCKERHUB_REPO}:${env.BUILD_NUMBER} || true'
+                sh 'docker rmi ${DOCKERHUB_REPO}:latest || true'
+            }
+        }
+    }
+}
